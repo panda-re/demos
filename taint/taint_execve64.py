@@ -28,12 +28,13 @@ if not panda.recording_exists(RECORDING_NAME):
     @panda.queue_blocking
     def run_cmd():
         panda.revert_sync('root')
-        panda.copy_to_guest('testprog', setup_script='setup.sh')
+        #panda.copy_to_guest('testprog', setup_script='setup.sh')
 
-        # Run network service in background
+        # Compile, then run the vulnerable service in background
+        panda.run_serial_cmd("gcc -o testprog/pwnme testprog/pwnme.c")
         print(panda.run_serial_cmd("./testprog/pwnme & "))
 
-        # Take a recording of the service consuming our test input
+        # While that's running in the background, record us connecting to it
         panda.record(RECORDING_NAME)
         print("\n\nIn-guest result:", panda.run_serial_cmd(connect_cmd))
         panda.end_record()
@@ -42,7 +43,7 @@ if not panda.recording_exists(RECORDING_NAME):
     panda.run()
     print(f"DONE creating recording {RECORDING_NAME}")
 
-if True: # Graph twice
+if True: # Replay and show which processes ran. Then do it again and see that it's the same
     from pandare.extras import ProcGraph
     print("\n\nREPLAY ONE: Process graph")
     panda.pyplugins.load(ProcGraph, {'hide_ranges': True})
@@ -66,9 +67,9 @@ if True: # Taint analysis
 
     @panda.ppp("syscalls2", "on_sys_recvfrom_return")
     def post_recvfrom(cpu, tb, fd, buf, size, flags, src, addrlen):
+        # After a process has recv'd data, log it and mark it as tainted
         bytes_recvd = panda.arch.get_retval(cpu, convention='syscall')
         data = panda.virtual_memory_read(cpu, buf, bytes_recvd)
-
         print(f"Recvfrom read {bytes_recvd} bytes from fd {fd} into {buf:x} to get {data}")
 
         # Create a unique taint label for this data and store some info
