@@ -1,0 +1,5 @@
+*.sw*
+*-rr-*
+*.iso
+*.plog
+taint/testprog/pwnme
