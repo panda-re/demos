@@ -28,10 +28,10 @@ if not panda.recording_exists(RECORDING_NAME):
     @panda.queue_blocking
     def run_cmd():
         panda.revert_sync('root')
-        #panda.copy_to_guest('testprog', setup_script='setup.sh')
 
-        # Compile, then run the vulnerable service in background
-        panda.run_serial_cmd("gcc -o testprog/pwnme testprog/pwnme.c")
+        # Copy the test program into the VM, compile it, and run it
+        panda.copy_to_guest('testprog')
+        print(panda.run_serial_cmd("gcc -o testprog/pwnme testprog/pwnme.c"))
         print(panda.run_serial_cmd("./testprog/pwnme & "))
 
         # While that's running in the background, record us connecting to it
