@@ -4,7 +4,7 @@ This is intended to be a five minute demo as part of a talk on whole-system dyna
 
 Block quotes are suggested talking points for the demonstrator.
 
-The firmware I used was version 'DIR850LA1_FW114WWb07.bin' - the rehosting is
+The firmware I used was version 'DIR850LA1_FW114WWb07.bin' (available [here](http://files.dlink.com.au/Products/DIR-850L/REV_A/Firmware/Firmware_v1.14B07/DIR850LA1_FW114WWb07.bin))- the rehosting is
 not part of this demo.  You are meant to use a docker container.
 
 Some background links on the exploit:
